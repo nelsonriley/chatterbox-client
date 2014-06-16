@@ -2,13 +2,22 @@
 
 var app = {
 
-  getMessages: function() {
+  init: function () {
+    app.fetch();
+    setInterval(function() {
+      app.fetch();
+    }, 2000);
+  },
+
+  server: 'https://api.parse.com/1/classes/chatterbox',
+
+  fetch: function() {
     $.ajax({
-      url: 'https://api.parse.com/1/classes/chatterbox',
-      type: 'get',
-      success: function(data) { _.each(data.results, function(msg) {
-        app.displayMessage(msg);
-      });
+      url: app.server,
+      type: 'GET',
+      success: function(data) {
+        app.displayNewMessages(data.results, 10);
+        console.log("hi");
       },
       error: function() { console.log('errorful'); }
     });
@@ -37,6 +46,13 @@ var app = {
     } else {
       console.log('Attack message: ' , messageData);
     }
+  },
+
+  displayNewMessages: function(messagesData, count) {
+    $('.messages').children().remove();
+    for (var i = messagesData.length - 1 ; i > messagesData.length - 1 - count ; i-- ) {
+      app.displayMessage(messagesData[i]);
+    }
   }
 
 
@@ -52,4 +68,4 @@ var app = {
 
 };
 
-app.getMessages();
+app.init();

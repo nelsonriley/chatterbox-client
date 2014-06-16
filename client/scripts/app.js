@@ -61,15 +61,32 @@ var app = {
   displayUserName: function() {
     var userName = app.getUserName();
     $('.current-user-input-container .name').text(userName);
+  },
+
+  createMessage: function() {
+    var sendMsg = {
+      'username': app.getUserName(),
+      'text': $('.current-user-input-container .message').val(),
+      'roomname': 'daveNelson'
+    };
+    return sendMsg;
+  },
+
+  send: function(message) {
+    console.dir(JSON.stringify(message));
+    $.ajax({
+      url: app.server,
+      type: 'POST',
+      data: JSON.stringify(message),
+      contentType: 'application/json',
+      success: function(data) {
+        $('.current-user-input-container .message').val('');
+      },
+      error: function() {
+        throw "Could not send message";
+      }
+    });
   }
-
-
-
-
-
-
-
-
 
 
 
@@ -78,4 +95,7 @@ var app = {
 app.fetch();
 $(document).ready(function(){
   app.init();
+  $('.current-user-input-container .submit').click(function() {
+    app.send(app.createMessage());
+  });
 });

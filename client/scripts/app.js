@@ -85,7 +85,7 @@ var app = {
   createMessage: function() {
     var sendMsg = {
       'username': app.getUserName(),
-      'text': $('.current-user-input-container .message').val(),
+      'text': $('.current-user-input-container #message').val(),
       'roomname': (app.activeChatRoom || 'default room')
     };
     return sendMsg;
@@ -98,7 +98,7 @@ var app = {
       data: JSON.stringify(message),
       contentType: 'application/json',
       success: function(data) {
-        $('.current-user-input-container .message').val('');
+        $('.current-user-input-container #message').val('');
       },
       error: function() {
         throw "Could not send message";
@@ -153,7 +153,7 @@ var app = {
 app.fetch();
 $(document).ready(function(){
   app.init();
-  $('.current-user-input-container .submit').click(function(e) {
+  $('#send').on('submit', function(e) {
     e.preventDefault();
     app.send(app.createMessage());
   });

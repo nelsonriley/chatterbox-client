@@ -51,10 +51,10 @@ var app = {
       var user = messageData.username;
       var message = messageData.text;
       var room = messageData.roomname;
-      var time = messageData.createdAt;
+      var time = moment(messageData.createdAt).fromNow();
       var $element = $('<div class="chat"></div>');
-      $element.append('<span class="username">' + user + '</span><span>:</span>');
-      $element.append('<span class="time">' + time + ' </span>');
+      $element.append('<span class="username">' + user + '</span><span> </span>');
+      $element.append('<span class="time"> ' + time + ' </span>');
       $element.append('<div class="message">' + message + ' </div>');
       $('#chats').append($element);
     }

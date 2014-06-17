@@ -11,6 +11,7 @@
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/handlebars/handlebars.js"></script>
     <!-- your scripts -->
     <script src="scripts/config.js"></script>
     <script src="scripts/app.js"></script>
@@ -67,4 +68,22 @@
       </div>
     </div>
   </body>
+
+  <script id="message-template" type="text/x-handlebars-template">
+    <div class="chat panel panel-info">
+      <div class="panel-heading">
+        <h3 class="username panel-title">{{username}}</h3>
+        <span class="time pull-right">{{time}}</span>
+      </div>
+      <div class="message panel-body">{{text}}</div>
+    </div>
+  </script>
+
+  <script id="room-template" type="text/x-handlebars-template">
+    <a class="room list-group-item" href="#">{{roomname}}</a>
+  </script>
+
+  <script id="friend-template" type="text/x-handlebars-template">
+    <li class="friend list-group-item">{{username}}</li>
+  </script>
 </html>

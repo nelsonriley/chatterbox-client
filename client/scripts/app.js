@@ -48,17 +48,12 @@ var app = {
 
   addMessage: function(messageData) {
     if (app.messageIsClean(messageData)) {
-      var user = messageData.username;
-      var message = messageData.text;
-      var room = messageData.roomname;
-      var time = moment(messageData.createdAt).fromNow();
-      var $element = $('<div class="chat panel panel-info"></div>');
-      var $panelHeading = $('<div class="panel-heading"></div>');
-      $panelHeading.append('<h3 class="username panel-title">' + user + '</h3>');
-      $panelHeading.append('<span class="time"> ' + time + ' </span>');
-      $element.append($panelHeading);
-      $element.append('<div class="panel-body message">' + message + '</div>');
-      $('#chats').append($element);
+      var context = messageData;
+      context.time = moment(context.createdAt).fromNow();
+      var source = $('#message-template').html();
+      var template = Handlebars.compile(source);
+      var html = template(context);
+      $('#chats').append(html);
     }
   },
 
@@ -113,8 +108,10 @@ var app = {
   },
 
   addRoom: function(room) {
-    var $room = $('<a href="#" class="room list-group-item">' + room + '</a>');
-    $('#roomSelect').append($room);
+    var source = $('#room-template').html();
+    var template = Handlebars.compile(source);
+    var html = template({roomname: room});
+    $('#roomSelect').append(html);
   },
 
   roomList: {},
@@ -133,8 +130,11 @@ var app = {
 
   addFriend: function(username) {
     if (app.friendList[username] === undefined) {
-      var $friend = $('<li class="friend list-group-item">' + username + '</li>');
-      $('#friendSelect').append($friend);
+      var source = $('#friend-template').html();
+      var template = Handlebars.compile(source);
+      var html = template({username: username});
+      $('#friendSelect').append(html);
+
       app.friendList[username] = true;
       app.highlightFriends();
     }

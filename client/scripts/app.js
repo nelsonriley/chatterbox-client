@@ -9,6 +9,8 @@ var app = {
     }, 2000);
   },
 
+  activeChatRoom: false,
+
   server: 'https://api.parse.com/1/classes/chatterbox',
 
   getUserName: function() {
@@ -30,9 +32,16 @@ var app = {
 
   messageIsClean: function(msg) {
     for (var key in msg) {
-      if ( msg[key].indexOf('<') + msg[key].indexOf('>') > -2) {
+      if ( !app.stringIsClean(msg[key]) ) {
         return false;
       }
+    }
+    return true;
+  },
+
+  stringIsClean: function(string) {
+    if ( typeof string !== 'string' || (string.indexOf('<') + string.indexOf('>') > -2)) {
+      return false;
     }
     return true;
   },
@@ -48,15 +57,22 @@ var app = {
       $element.append('<span class="time">' + time + ' </span>');
       $element.append('<div class="message">' + message + ' </div>');
       $('#chats').append($element);
-    } else {
-      console.log('Attack message: ' , messageData);
     }
   },
 
   addNewMessages: function(messagesData, count) {
     app.clearMessages();
-    for (var i = 0 ; i < count ; i++ ) {
-      app.addMessage(messagesData[i]);
+    if (!app.activeChatRoom) {
+      console.log("hi");
+      for (var i = 0 ; i < count ; i++ ) {
+        app.addMessage(messagesData[i]);
+      }
+    } else {
+      for (var i = 0 ; i < messagesData.length ; i++) {
+        if ( messagesData[i].roomname === app.activeChatRoom ) {
+          app.addMessage(messagesData[i]);
+        }
+      }
     }
   },
 
@@ -95,7 +111,7 @@ var app = {
   },
 
   addRoom: function(room) {
-    var $room = $('<div class="room">' + room + '</div>');
+    var $room = $('<div class="room"><a href="#">' + room + '</a></div>');
     $('#roomSelect').append($room);
   },
 
@@ -104,8 +120,7 @@ var app = {
   updateChatRooms: function(allChats) {
     for (var i = 0 ; i < allChats.length ; i++ ) {
       var room = allChats[i].roomname;
-      console.log(room);
-      if ( app.roomList[room] === undefined ) {
+      if ( app.roomList[room] === undefined && app.stringIsClean(room) ) {
         app.roomList[room] = true;
         app.addRoom(room);
       }
@@ -122,5 +137,11 @@ $(document).ready(function(){
   $('.current-user-input-container .submit').click(function(e) {
     e.preventDefault();
     app.send(app.createMessage());
+  });
+  $('body').on('click', '.room', function(e) {
+    e.preventDefault();
+    var room = $(this).find('a').text();
+    room === 'All Rooms' ? (app.activeChatRoom = false) : (app.activeChatRoom = room);
+    app.fetch();
   });
 });

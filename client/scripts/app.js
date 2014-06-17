@@ -52,10 +52,12 @@ var app = {
       var message = messageData.text;
       var room = messageData.roomname;
       var time = moment(messageData.createdAt).fromNow();
-      var $element = $('<div class="chat"></div>');
-      $element.append('<span class="username">' + user + '</span><span> </span>');
-      $element.append('<span class="time"> ' + time + ' </span>');
-      $element.append('<div class="message">' + message + ' </div>');
+      var $element = $('<div class="chat panel panel-info"></div>');
+      var $panelHeading = $('<div class="panel-heading"></div>');
+      $panelHeading.append('<h3 class="username panel-title">' + user + '</h3>');
+      $panelHeading.append('<span class="time"> ' + time + ' </span>');
+      $element.append($panelHeading);
+      $element.append('<div class="panel-body message">' + message + '</div>');
       $('#chats').append($element);
     }
   },
@@ -111,7 +113,7 @@ var app = {
   },
 
   addRoom: function(room) {
-    var $room = $('<div class="room"><a href="#">' + room + '</a></div>');
+    var $room = $('<a href="#" class="room list-group-item">' + room + '</a>');
     $('#roomSelect').append($room);
   },
 
@@ -131,7 +133,7 @@ var app = {
 
   addFriend: function(username) {
     if (app.friendList[username] === undefined) {
-      var $friend = $('<div class="friend">' + username + '</div>');
+      var $friend = $('<li class="friend list-group-item">' + username + '</li>');
       $('#friendSelect').append($friend);
       app.friendList[username] = true;
       app.highlightFriends();
@@ -142,7 +144,7 @@ var app = {
     $('#chats .username').each(function(key, val) {
       for (var friend in app.friendList) {
         if ($(val).text() ===  friend) {
-          $(val).addClass('highlight');
+          $(val).closest('.chat.panel').removeClass('panel-info').addClass('panel-success');
         }
       }
     });
@@ -159,13 +161,15 @@ $(document).ready(function(){
   });
   $('body').on('click', '.room', function(e) {
     e.preventDefault();
-    var room = $(this).find('a').text();
+    var room = $(this).text();
     room === 'All Rooms' ? (app.activeChatRoom = false) : (app.activeChatRoom = room);
+    $('.room').removeClass('active');
+    $(this).addClass('active');
     app.fetch();
   });
   $('#add-room').click(function(e) {
     e.preventDefault();
-    var $room = $(this).prev('input');
+    var $room = $('#add-room').parent().prev('div').find('input');
     app.addRoom($room.val());
     $room.val('');
   });

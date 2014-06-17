@@ -19,8 +19,10 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'GET',
+      data: 'order=-createdAt',
       success: function(data) {
-        app.displayNewMessages(data.results, 10);
+        app.addNewMessages(data.results, 10);
+        app.updateChatRooms(data.results);
       },
       error: function() { console.log('errorful'); }
     });
@@ -35,26 +37,26 @@ var app = {
     return true;
   },
 
-  displayMessage: function(messageData) {
+  addMessage: function(messageData) {
     if (app.messageIsClean(messageData)) {
       var user = messageData.username;
       var message = messageData.text;
       var room = messageData.roomname;
       var time = messageData.createdAt;
-      var element = $('<div class="message-container"></div>');
-      element.append('<span class="username">' + user + ': </span>');
-      element.append('<span class="time">' + time + ' </span>');
-      element.append('<div class="message">' + message + ' </div>');
-      $('.messages').append(element);
+      var $element = $('<div class="chat"></div>');
+      $element.append('<span class="username">' + user + ': </span>');
+      $element.append('<span class="time">' + time + ' </span>');
+      $element.append('<div class="message">' + message + ' </div>');
+      $('#chats').append($element);
     } else {
       console.log('Attack message: ' , messageData);
     }
   },
 
-  displayNewMessages: function(messagesData, count) {
-    $('.messages').children().remove();
-    for (var i = messagesData.length - 1 ; i > messagesData.length - 1 - count ; i-- ) {
-      app.displayMessage(messagesData[i]);
+  addNewMessages: function(messagesData, count) {
+    app.clearMessages();
+    for (var i = 0 ; i < count ; i++ ) {
+      app.addMessage(messagesData[i]);
     }
   },
 
@@ -86,6 +88,28 @@ var app = {
         throw "Could not send message";
       }
     });
+  },
+
+  clearMessages: function() {
+    $('#chats').children().remove();
+  },
+
+  addRoom: function(room) {
+    var $room = $('<div class="room">' + room + '</div>');
+    $('#roomSelect').append($room);
+  },
+
+  roomList: {},
+
+  updateChatRooms: function(allChats) {
+    for (var i = 0 ; i < allChats.length ; i++ ) {
+      var room = allChats[i].roomname;
+      console.log(room);
+      if ( app.roomList[room] === undefined ) {
+        app.roomList[room] = true;
+        app.addRoom(room);
+      }
+    }
   }
 
 
@@ -95,7 +119,8 @@ var app = {
 app.fetch();
 $(document).ready(function(){
   app.init();
-  $('.current-user-input-container .submit').click(function() {
+  $('.current-user-input-container .submit').click(function(e) {
+    e.preventDefault();
     app.send(app.createMessage());
   });
 });

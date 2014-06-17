@@ -6,7 +6,7 @@ body {
 }
 
 #main {
-    width: 500px;
+    width: 800px;
     margin: auto;
     text-align: left;
     background: white;
@@ -81,4 +81,13 @@ form input[type=text] {
 
 .spinner img {
     padding: 10px;
+}
+
+.col.right {
+    float: right;
+}
+
+.col.left {
+    float: left;
+    width: 500px;
 }

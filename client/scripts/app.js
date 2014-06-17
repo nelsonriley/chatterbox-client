@@ -14,7 +14,7 @@ var app = {
   server: 'https://api.parse.com/1/classes/chatterbox',
 
   getUserName: function() {
-    return window.location.search.split("username=")[1];
+    return window.location.search.split('username=')[1];
   },
 
   fetch: function() {
@@ -53,7 +53,7 @@ var app = {
       var room = messageData.roomname;
       var time = messageData.createdAt;
       var $element = $('<div class="chat"></div>');
-      $element.append('<span class="username">' + user + ': </span>');
+      $element.append('<span class="username">' + user + '</span><span>:</span>');
       $element.append('<span class="time">' + time + ' </span>');
       $element.append('<div class="message">' + message + ' </div>');
       $('#chats').append($element);
@@ -61,9 +61,9 @@ var app = {
   },
 
   addNewMessages: function(messagesData, count) {
+    $('.room-title').text(app.activeChatRoom || 'All Rooms');
     app.clearMessages();
     if (!app.activeChatRoom) {
-      console.log("hi");
       for (var i = 0 ; i < count ; i++ ) {
         app.addMessage(messagesData[i]);
       }
@@ -74,6 +74,7 @@ var app = {
         }
       }
     }
+    app.highlightFriends();
   },
 
   displayUserName: function() {
@@ -85,13 +86,12 @@ var app = {
     var sendMsg = {
       'username': app.getUserName(),
       'text': $('.current-user-input-container .message').val(),
-      'roomname': 'daveNelson'
+      'roomname': (app.activeChatRoom || 'default room')
     };
     return sendMsg;
   },
 
   send: function(message) {
-    console.dir(JSON.stringify(message));
     $.ajax({
       url: app.server,
       type: 'POST',
@@ -117,6 +117,8 @@ var app = {
 
   roomList: {},
 
+  friendList: {},
+
   updateChatRooms: function(allChats) {
     for (var i = 0 ; i < allChats.length ; i++ ) {
       var room = allChats[i].roomname;
@@ -125,9 +127,26 @@ var app = {
         app.addRoom(room);
       }
     }
+  },
+
+  addFriend: function(username) {
+    if (app.friendList[username] === undefined) {
+      var $friend = $('<div class="friend">' + username + '</div>');
+      $('#friendSelect').append($friend);
+      app.friendList[username] = true;
+      app.highlightFriends();
+    }
+  },
+
+  highlightFriends: function() {
+    $('#chats .username').each(function(key, val) {
+      for (var friend in app.friendList) {
+        if ($(val).text() ===  friend) {
+          $(val).addClass('highlight');
+        }
+      }
+    });
   }
-
-
 
 };
 
@@ -143,5 +162,16 @@ $(document).ready(function(){
     var room = $(this).find('a').text();
     room === 'All Rooms' ? (app.activeChatRoom = false) : (app.activeChatRoom = room);
     app.fetch();
+  });
+  $('#add-room').click(function(e) {
+    e.preventDefault();
+    var $room = $(this).prev('input');
+    app.addRoom($room.val());
+    $room.val('');
+  });
+  $('body').on('click', '.chat .username', function(e) {
+    var friend = $(this).text();
+    friend =
+    app.addFriend(friend);
   });
 });

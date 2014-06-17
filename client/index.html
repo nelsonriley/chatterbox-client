@@ -15,12 +15,12 @@
   <body>
     <div id="main">
       <div class="col left">
-        <h1>Chatter Box</h1>
+        <h1 class="room-title"></h1>
         <!-- Your HTML goes here! -->
         <div class="current-user-input-container">
           <form>
             <span class="name"></span>
-            <input class="message" type='textfield'/>
+            <input class="message" type="textfield"/>
             <button class="submit">Send</button>
           </form>
         </div>
@@ -28,9 +28,14 @@
       </div>
       <div class="col right">
         <h1>Chat Rooms</h1>
+        <form>
+          <input type="textfield" placeholder="Add new room"/>
+          <button id="add-room">Create Room</button>
+        </form>
         <div class="all-rooms room"><a href="#">All Rooms</a></div>
-        <div id="roomSelect">
-        </div>
+        <div id="roomSelect"></div>
+        <h1>Friends</h1>
+        <div id="friendSelect"></div>
       </div>
     </div>
   </body>
